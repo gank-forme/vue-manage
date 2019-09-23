@@ -45,8 +45,8 @@ export const constantRouterMap = [
 		hidden:true
   },
 	{ path: '/login',name: 'login',component:() => import('@/page/login'),hidden: true},
-	{ path: '/404', component: () => import('@/page/errorPage/404'), hidden: true },
-  { path: '/401', component: () => import('@/page/errorPage/401'), hidden: true },
+	// { path: '/404', component: () => import('@/page/errorPage/404'), hidden: true },
+  // { path: '/401', component: () => import('@/page/errorPage/401'), hidden: true },
 	{
 		path: '/index',
 		name: 'index',
@@ -294,7 +294,7 @@ export const asyncRouterMap = [
       component: () => import('@/page/permission/organ'),
     }]
   },
-  
+
 	// { path: '*', redirect: '/404', hidden: true }
 	];
 

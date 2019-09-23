@@ -7,7 +7,7 @@
 
 <script>
   import userImg from "@/assets/img/avatar-3.png";
-  import { github } from "@/utils/env";
+  // import { github } from "@/utils/env";
 
 export default {
   name:'cardList',

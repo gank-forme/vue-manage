@@ -28,7 +28,7 @@
 						<icon-svg icon-class="iconqq_zone" />
 					</div>
 				</li>
-			
+
 				<li>
 					<div class="item" @click="shareToDouban()">
 						<icon-svg icon-class="icondouban" />
@@ -59,7 +59,7 @@
 					colorLight: '#ffffff',
 					correctLevel: QRCode.CorrectLevel.H
 				}
-				
+
 			}
 		},
 		mounted(){
@@ -167,7 +167,7 @@
 				font-size:12px;
 			}
 		}
-     
+
 	}
-	
+
 </style>

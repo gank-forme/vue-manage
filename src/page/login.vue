@@ -11,7 +11,7 @@
 					    <span class="loginTips"><icon-svg icon-class="iconuser" /></span>
 						<el-input @keyup.enter.native ="submitForm('loginForm')"  class="area" type="text" placeholder="用户名" v-model="loginForm.username" ></el-input>
 					</el-form-item>
-					<el-form-item prop="password" class="login-item"> 
+					<el-form-item prop="password" class="login-item">
 					    <span class="loginTips"><icon-svg icon-class="iconLock" /></span>
 						<el-input @keyup.enter.native ="submitForm('loginForm')" class="area" type="password" placeholder="密码" v-model="loginForm.password"></el-input>
 					</el-form-item>
@@ -130,7 +130,7 @@
 				}
 			}
 		}
-	
+
 		.loginForm{
 			.submit_btn{
 				width: 100%;
@@ -162,7 +162,7 @@
 			height:60px;
 		}
 	}
-	
+
 	.tiparea{
 		text-align:left;
 		font-size: 12px;
@@ -172,7 +172,7 @@
 			margin-left: 54px;
 		}
 	}
-	
+
 	.form-fade-enter-active, .form-fade-leave-active {
 	  	transition: all 1s;
 	}

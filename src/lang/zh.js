@@ -46,5 +46,5 @@ const zh = {
       person:'人'
     }
   }
-  
+
 export default zh;

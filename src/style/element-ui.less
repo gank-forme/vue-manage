@@ -1,0 +1,467 @@
+ //覆盖一些element-ui样式
+.block-checkbox {
+    display: block;
+}
+.phoneGroup{
+    .el-checkbox{
+        margin-left:0 !important;
+        width:100%;
+    }
+}
+.loginForm{
+    .el-input__inner{
+      padding-left:30px !important;
+      height:36px !important;
+    }
+}
+
+
+// 设置左侧菜单栏 start
+.el-menu {
+    border: none;
+    height: 100%;
+    .dropItem{
+      padding: 0 6px !important;
+      .svg-icon{
+        margin-right: 5px;
+      }
+    }
+    .el-tooltip,
+    .el-submenu__title{
+       padding: 0 6px !important;
+    }
+}
+.el-submenu{
+  .svg-icon{
+    margin-right: 5px;
+  }
+}
+// 设置左侧菜单栏 end
+
+.condition-container{
+    .datetime {
+        .el-input__inner{
+            width:180px;
+        }
+    }
+    .el-input__inner{
+        width:141px;
+    }
+}
+.irate{
+    .el-icon-star-on{
+      color:#67c23a !important;
+    }
+}
+.operation-container {
+  .cell {
+    padding: 10px !important;
+  }
+  .el-button {
+    &:nth-child(3) {
+      margin-top: 10px;
+      margin-left: 0px;
+    }
+    &:nth-child(4) {
+      margin-top: 10px;
+    }
+  }
+}
+
+.el-upload {
+  input[type="file"] {
+    display: none !important;
+  }
+}
+
+.el-upload__input {
+  display: none;
+}
+
+.cell {
+  .el-tag {
+    margin-right: 8px;
+  }
+}
+
+.small-padding {
+  .cell {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+
+.status-col {
+  .cell {
+    padding: 0 10px;
+    text-align: center;
+    .el-tag {
+      margin-right: 0px;
+    }
+  }
+}
+
+//暂时性解决diolag 问题 https://github.com/ElemeFE/element/issues/2461
+.el-dialog {
+  transform: none;
+  left: 0;
+  position: relative;
+  margin: 0 auto;
+}
+
+
+//textarea修改样式
+.article-textarea {
+  textarea {
+    padding-right: 40px;
+    resize: none;
+    border: none;
+    border-radius: 0px;
+    border-bottom: 1px solid #bfcbd9;
+  }
+}
+
+//element ui upload
+.upload-container {
+  .el-upload {
+    width: 100%;
+    .el-upload-dragger {
+      width: 100%;
+      height: 200px;
+    }
+  }
+}
+
+.top-menu{
+  .el-badge__content{
+    top: 12px !important;
+  }
+}
+.li-badge{
+    .one{
+        .el-badge__content{
+            background-color: #a9d86e;
+        }
+    }
+    .three{
+       .el-badge__content{
+            background-color: #FCB322;
+        }
+    }
+}
+
+// 搜索区域
+.search-form{
+  width:100%;
+  min-width:750px;
+  .el-form-item{
+      margin-bottom: 10px;
+       .el-date-editor{
+          width:166px;
+          .el-input__inner{
+              padding-right: 0;
+          }
+      }
+  }
+}
+.fillcontain{
+  .el-input__inner{
+    height:30px !important;
+    line-height: 30px !important;
+  }
+}
+.el-table th{
+    background-color: #EEF2FE !important;
+}
+
+.el-tabs--border-card>.el-tabs__header .el-tabs__item.is-active{
+  color:#a9d86e !important;
+}
+
+.leftShareList{
+  width:200px;
+}
+.shareOther a{
+  color:#000000;
+}
+.moreShareList{
+  padding: 0;
+  ul{
+    width:100%;
+    a{
+      color:#000000;
+      padding: 5px 10px;
+      box-sizing: border-box;
+    }
+    a:hover{
+      background: #e8e8e8;
+    }
+    li{
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      .svg-icon{
+        margin-right: 10px;
+      }
+      span{
+        line-height: 0;
+      }
+    }
+  }
+}
+
+.qcodepopper{
+  .wechat-area{
+      align-items: center;
+      .titles{
+        font-size: 14px;
+        background: #a9d86e;
+        color:#fff;
+        height: 30px;
+        line-height: 30px;
+        width:100px;
+        text-align: center;
+        border-radius: 20px;
+      }
+      img{
+        width:100px;
+        height:100px;
+      }
+  }
+}
+.yanshare{
+  .shareUl{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    li{
+      display: flex;
+      flex:1;
+      justify-content: center;
+      cursor: pointer;
+    }
+  }
+}
+.yanSharewx{
+  padding: 10px 0;
+  width:100px !important;
+  .qrcodeArea{
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width:100px;
+    margin: 0 auto;
+    .saoTitle{
+      font-size: 14px;
+      color:#a9d86e;
+      margin-bottom: 5px;
+    }
+  }
+}
+
+
+
+.salesPrice{
+  span{
+    font-weight: bold;
+  }
+}
+.salesStatus{
+  span{
+     font-size: 12px;
+     padding: 5px 10px;
+     color:#fff;
+     border-radius: 5px;
+  }
+}
+.salesUsername{
+   .cell{
+     display: flex;
+     align-items: center;
+      .userImg{
+        width: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+      }
+   }
+}
+.salesTable{
+  .el-table{
+    height:407px;
+    max-height: 407px;
+    overflow:hidden;
+    border-radius: 6px;
+  }
+  th{
+    background: #fff !important;
+  }
+}
+.cardBody{
+   .el-card__body{
+     display: flex;
+     flex-direction: column;
+   }
+}
+.logContainer{
+  .box-card{
+    height: 100%;
+    .el-card__body{
+      padding: 10px 20px;
+      height: 80%;
+    }
+    .item{
+      border-bottom: 1px solid #e8e8e8;
+      padding: 10px 0;
+    }
+  }
+}
+.tabContainer{
+  .el-tabs--border-card{
+    box-shadow:none;
+  }
+  .svg-icon{
+    margin-right: 5px;
+  }
+}
+.infoItem .el-menu,
+.langItem .el-menu{
+  min-width:120px !important;
+  text-align: left;
+  .el-menu-item{
+    min-width:100%;
+  }
+}
+
+.userinfo{
+  .el-icon-arrow-down{
+    display: none;
+ }
+}
+.table_container{
+  .el-table__body-wrapper{
+    overflow: hidden;
+  }
+}
+
+.el-form-item__label {
+   color: #fff !important;
+}
+.comon {
+  .el-dialog {
+    .el-input .el-input__inner, .el-textarea__inner {
+      background: #fff !important;
+      // border: 1px solid #DCDFE6;
+      color: #606266 !important;
+    }
+    .el-form-item__label {
+       color: #606266 !important;
+    }
+  }
+
+}
+.info .el-form-item__label,.infoMana .el-form-item__label {
+   opacity: 0.5;
+}
+.el-input .el-input__inner,.el-textarea__inner {
+  background: rgba(255,255,255,0.05) !important;
+  // border: 1px solid rgba(255,255,255,0.50);
+  color: #fff !important;
+}
+.analyList {
+  .el-input__inner {
+    border: none;
+  }
+}
+.el-table th{
+  background: rgba(24,41,91,0.30) !important;
+  color: #fff;
+}
+.el-table tr {
+  background: transparent !important;
+  color: #fff;
+  opacity: 0.8;
+}
+.el-table tbody tr:hover>td {
+  background: rgba(255,255,255,0.10) !important;
+}
+.el-table tbody tr:hover>td .del,.el-table tbody tr:hover>td .looktxt{
+  display: inline-block;
+}
+
+.el-table td, .el-table th.is-leaf {
+    border-bottom: 1px solid #909399 !important;
+}
+.el-table::before {
+  display: none;
+}
+.el-table{
+  padding: 20px !important;
+  background: rgba(255,255,255,.1) !important;
+}
+.table .el-pagination {
+  background: rgba(255,255,255,.1) !important;
+}
+.el-pagination {
+  text-align: right;
+  padding: 20px !important;
+}
+.el-pagination.is-background .btn-next, .el-pagination.is-background .btn-prev, .el-pagination.is-background .el-pager li{
+  background: rgba(255,255,255,0.10) !important;
+  border: 1px solid rgba(255,255,255,0.20);
+  color: #fff !important;
+}
+.el-pagination.is-background .el-pager li:not(.disabled).active {
+    background-color: #32ABFF !important;
+}
+.el-pagination.is-background .btn-next.disabled, .el-pagination.is-background .btn-next:disabled, .el-pagination.is-background .btn-prev.disabled, .el-pagination.is-background .btn-prev:disabled, .el-pagination.is-background .el-pager li.disabled {
+    color: rgba(255,255,255,0.20) !important;
+}
+#app {
+  .el-radio--mini.is-bordered {
+    padding: 5px 20px 0 10px;
+    border-color: transparent;
+    color: #fff;
+  }
+  .el-radio.is-bordered.is-checked {
+    background: rgba(255,255,255,0.20);
+  }
+  .el-radio__input.is-checked+.el-radio__label {
+    color: #fff;
+  }
+  .el-radio__inner {
+    display: none;
+  }
+  .el-pagination__total,.el-pagination__jump {
+    color: #fff;
+  }
+  .btns {
+    border: 1px solid #DCDFE6;
+    color: #fff;
+    background: transparent;
+
+  }
+  .el-button {
+    img {
+      vertical-align: bottom;
+      width: 12px;
+      height: 12px;
+      margin-right: 5px;
+    }
+  }
+  .el-date-editor.el-input, .el-date-editor.el-input__inner {
+    width: 250px;
+    background: transparent;
+  }
+  .el-range-editor .el-range-input {
+    background: transparent;
+    color: #fff;
+  }
+  .el-date-editor .el-range-separator {
+    color: #eee;
+    opacity: 0.7
+  }
+}
+
+/**--------------------------------------**/

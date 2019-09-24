@@ -45,7 +45,10 @@
 <script>
 	import logoImg from "@/assets/img/logo.png";
 	import { login } from "@/api/user";
-    import { setToken } from '@/utils/auth'
+  import { setToken } from '@/utils/auth';
+  import axios from 'axios'
+
+
 
 	export default {
 	    data(){
@@ -78,17 +81,25 @@
         });
       },
 	    submitForm(loginForm) {
-  			this.$refs[loginForm].validate((valid) => {
-  				if (valid) {
-  					let userinfo = this.loginForm;
-  					login(userinfo).then(res => {
-  						let userList = res.data.userList;
-  						setToken("Token",userList.token)
-  						this.$router.push({ path: '/' })
-  						this.$store.dispatch('initLeftMenu'); //设置左边菜单始终为展开状态
-  					})
-  				}
-  			});
+  			// this.$refs[loginForm].validate((valid) => {
+  			// 	if (valid) {
+  			// 		let userinfo = this.loginForm;
+  			// 		login(userinfo).then(res => {
+  			// 			let userList = res.data.userList;
+  			// 			setToken("Token",userList.token)
+  			// 			this.$router.push({ path: '/' })
+  			// 			this.$store.dispatch('initLeftMenu'); //设置左边菜单始终为展开状态
+  			// 		})
+  			// 	}
+  			// });
+        let that = this;
+        console.log(axios);
+        axios({
+           method: 'post',
+           url: '/ElecCertSD/login?userName=liyanbo&password=q12345&code=3y8l',
+         }).then(function (res) {
+
+         })
 			}
 		}
 	}

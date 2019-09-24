@@ -14,6 +14,13 @@
 					    <span class="loginTips"><icon-svg icon-class="iconLock" /></span>
 						<el-input @keyup.enter.native ="submitForm('loginForm')" class="area" type="password" placeholder="密码" v-model="loginForm.password"></el-input>
 					</el-form-item>
+
+          <el-form-item prop="password" class="login-item">
+					    <span class="loginTips"><icon-svg icon-class="iconLock" /></span>
+						<el-input @keyup.enter.native ="submitForm('loginForm')" class="area" type="text" placeholder="验证" v-model="loginForm.code"></el-input>
+            <img src="/ElecCertSD/authImage" alt="">
+
+					</el-form-item>
 					<el-form-item>
 				    	<el-button type="primary"  @click="submitForm('loginForm')" class="submit_btn">登 录</el-button>
 				  	</el-form-item>
@@ -47,7 +54,7 @@
 	import { login } from "@/api/user";
   import { setToken } from '@/utils/auth';
   import axios from 'axios'
-
+  import qs from 'qs'
 
 
 	export default {
@@ -56,7 +63,9 @@
 				logo:logoImg,
 				loginForm: {
 					username: 'admin',
-					password: '123456'
+					password: '123456',
+          code:''
+
 				},
 				rules: {
 					username: [
@@ -93,10 +102,16 @@
   			// 	}
   			// });
         let that = this;
-        console.log(axios);
+        let data ={
+          password:'q12345',
+          userName:'liyanbo',
+          code:that.loginForm.code
+        };
         axios({
            method: 'post',
-           url: '/ElecCertSD/login?userName=liyanbo&password=q12345&code=3y8l',
+           // url: '/ElecCertSD/login?password=q12345&userName=liyanbo&code='+that.loginForm.code,
+           url: '/ElecCertSD/login',
+           data:qs.stringify(data)
          }).then(function (res) {
 
          })

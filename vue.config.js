@@ -54,12 +54,12 @@ module.exports = {
     // 由于本项目数据通过easy-mock和mockjs模拟，不存在跨域问题，无需配置代理;
     proxy: {
       '/ElecCertSD': {
-          target: 'http://182.254.136.227:8666/ElecCertSD',
+          target: 'http://182.254.136.227:8666',
           ws: true,
           changeOrigin: true,
-          // pathRewrite: {
-	        //   '^/ElecCertSD': ''
-	        // }
+          pathRewrite: {
+	          '^/ElecCertSD': '/ElecCertSD'
+	        }
       }
     }
   },

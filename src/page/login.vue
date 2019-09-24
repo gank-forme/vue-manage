@@ -2,10 +2,9 @@
   	<div class="login_page">
 	  	<transition name="form-fade" mode="in-out">
 	  		<section class="form_contianer">
-			     <div class='titleArea rflex'>
-					<img class="logo" :src="logo" alt="小爱admin">
-					<span class='title'>小爱<i>Admin</i></span>
-				</div>
+			    <div class='titleArea rflex'>
+    					<span class='title'>山东电子证照</span>
+    			</div>
 		    	<el-form :model="loginForm" :rules="rules" ref="loginForm" class="loginForm">
 					<el-form-item prop="username" class="login-item">
 					    <span class="loginTips"><icon-svg icon-class="iconuser" /></span>
@@ -16,7 +15,7 @@
 						<el-input @keyup.enter.native ="submitForm('loginForm')" class="area" type="password" placeholder="密码" v-model="loginForm.password"></el-input>
 					</el-form-item>
 					<el-form-item>
-				    	<el-button type="primary"  @click="submitForm('loginForm')" class="submit_btn">SIGN IN</el-button>
+				    	<el-button type="primary"  @click="submitForm('loginForm')" class="submit_btn">登 录</el-button>
 				  	</el-form-item>
 					<div class="tiparea">
 						<p class="wxtip">温馨提示：</p>
@@ -73,23 +72,23 @@
 			loginByWechat(){
 			},
 			showMessage(type,message){
-                this.$message({
-                    type: type,
-                    message: message
-                });
-            },
-		    submitForm(loginForm) {
-				this.$refs[loginForm].validate((valid) => {
-					if (valid) {
-						let userinfo = this.loginForm;
-						login(userinfo).then(res => {
-							let userList = res.data.userList;
-							setToken("Token",userList.token)
-							this.$router.push({ path: '/' })
-							this.$store.dispatch('initLeftMenu'); //设置左边菜单始终为展开状态
-						})
-					}
-				});
+        this.$message({
+            type: type,
+            message: message
+        });
+      },
+	    submitForm(loginForm) {
+  			this.$refs[loginForm].validate((valid) => {
+  				if (valid) {
+  					let userinfo = this.loginForm;
+  					login(userinfo).then(res => {
+  						let userList = res.data.userList;
+  						setToken("Token",userList.token)
+  						this.$router.push({ path: '/' })
+  						this.$store.dispatch('initLeftMenu'); //设置左边菜单始终为展开状态
+  					})
+  				}
+  			});
 			}
 		}
 	}
@@ -208,4 +207,7 @@
 			}
 		}
 	}
+  input {
+    color: #ddd;
+  }
 </style>

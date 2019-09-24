@@ -41,7 +41,7 @@ export const constantRouterMap = [
 	{
     path: '',
     component: Layout,
-		// redirect: '/index/index',
+		redirect: '/index/index',
 		hidden:true
   },
 	{ path: '/login',name: 'login',component:() => import('@/page/login'),hidden: true},

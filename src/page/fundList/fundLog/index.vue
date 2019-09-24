@@ -5,7 +5,7 @@
 			<h1>数据操作日志</h1>
 			<el-form class="formBox clear" ref="form" :model="form" :inline='true'>
         <el-row >
-          <el-col :span="6">
+          <el-col :span="8">
              <el-form-item label="操作人账号">
                <el-input v-model="form.desc"></el-input>
              </el-form-item>

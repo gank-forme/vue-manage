@@ -164,6 +164,8 @@
        border:1px solid;
     }
     .userinfo-right{
+        position: absolute;
+        right: 0px;
         width:320px;
         padding: 0 10px;
         justify-content: space-between;

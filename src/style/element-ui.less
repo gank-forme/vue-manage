@@ -364,11 +364,7 @@
 .info .el-form-item__label,.infoMana .el-form-item__label {
    opacity: 0.5;
 }
-.el-input .el-input__inner,.el-textarea__inner {
-  background: rgba(255,255,255,0.05) !important;
-  // border: 1px solid rgba(255,255,255,0.50);
-  color: #fff !important;
-}
+
 .analyList {
   .el-input__inner {
     border: none;
@@ -419,6 +415,14 @@
     color: rgba(255,255,255,0.20) !important;
 }
 #app {
+  .el-input .el-input__inner,.el-textarea__inner {
+    background: rgba(255,255,255,0.05);
+    // border: 1px solid rgba(255,255,255,0.50);
+    color: #fff ;
+  }
+  .loginForm .el-input .el-input__inner,.el-textarea__inner {
+    color: #333 ;
+  }
   .el-radio--mini.is-bordered {
     padding: 5px 20px 0 10px;
     border-color: transparent;

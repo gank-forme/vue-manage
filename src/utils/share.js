@@ -32,7 +32,7 @@ export function shareConfig(type,obj){
                 'title':shareTitle,
                 'pics':obj.pic || qq.pic,  //QZone接口暂不支持发送多张图片的能力，若传入多张图片，则会自动选入第一张图片作为预览图。
                 'source':obj.source || qq.source, // 分享来源
-                'desc':obj.desc || qq.desc, 
+                'desc':obj.desc || qq.desc,
                 'summary':obj.summary || qq.summary,
             }
             baseUrl = qq.baseUrl+'?'+getParamsUrl(qqData)
@@ -42,9 +42,9 @@ export function shareConfig(type,obj){
             const qqZoneData = {
                 'url':shareUrl,
                 'title':shareTitle,
-                'pics':obj.pic || (qqZone.pic).split(','), 
+                'pics':obj.pic || (qqZone.pic).split(','),
                 'sharesource':obj.sharesource || qqZone.sharesource, // 分享来源
-                'desc':obj.desc || qqZone.desc, 
+                'desc':obj.desc || qqZone.desc,
                 'summary':obj.summary || qqZone.summary,
             }
             baseUrl = qqZone.baseUrl+'?'+getParamsUrl(qqZoneData)

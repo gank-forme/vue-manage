@@ -53,6 +53,7 @@
 import { mapGetters } from 'vuex'
 import * as mUtils from "@/utils/mUtils";
 import logoImg from "@/assets/img/logo.png";
+import axios from 'axios'
 
 
 
@@ -80,12 +81,23 @@ export default {
       ]),
   },
   created(){
+    this.getlist();
   },
   mounted(){
   },
   methods: {
     getIindex(citem,item,cindex){
       return (citem.meta.titleList)?item.path+'/'+citem.path+'/'+citem.meta.titleList[0].path:item.path+'/'+citem.path;
+    },
+    getlist(){
+      let that = this;
+      console.log(axios);
+      axios({
+         method: 'get',
+         url: '/ElecCertSD/userinfo',
+       }).then(function (res) {
+
+       })
     }
   }
 };

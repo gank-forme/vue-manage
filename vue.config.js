@@ -105,7 +105,7 @@ module.exports = {
     config.plugin('webpack-bundle-analyzer')
     .use(new BundleAnalyzerPlugin({
       openAnalyzer: false,   // 是否打开默认浏览器
-      analyzerPort:8777
+      analyzerPort:9999
     }))
 
     // 对vue-cli内部的 webpack 配置进行更细粒度的修改。

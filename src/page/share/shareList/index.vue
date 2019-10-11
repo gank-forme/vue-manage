@@ -5,13 +5,27 @@
 			<h1>证照共享接口列表</h1>
 			<el-form class="formBox clear" ref="form" :model="form" :inline='true'>
         <el-row >
-          <el-col :span="9">
+          <el-col :span="7">
              <el-form-item label="接口名称">
-               <el-input v-model="form.desc"></el-input>
+               <el-input v-model="form.name"></el-input>
              </el-form-item>
            </el-col>
+					 <el-col :span="9">
+	 					<el-form-item label="时间范围">
+	 						<el-date-picker
+	 							 v-model="value2"
+	 							 type='daterange'
+	 							 align="right"
+	 							 unlink-panels
+	 							 range-separator="至"
+	 							 start-placeholder="开始日期"
+	 							 end-placeholder="结束日期"
+	 							 :picker-options="pickerOptions">
+	 						 </el-date-picker>
+	 					</el-form-item>
+	 				</el-col>
            <el-col :span="2">
-              <el-button class="searchBtn" type="primary">查询</el-button>
+              <el-button class="searchBtn" type="primary" @click='search'>查询</el-button>
            </el-col>
          </el-row>
 
@@ -34,16 +48,16 @@
         >
       </el-table-column>
       <el-table-column
-        prop="name"
+        prop="typeName"
         label="接口名称"
         >
       </el-table-column>
       <el-table-column
-        prop="address"
+        prop="invokeCount"
         label="当日已调用次数">
       </el-table-column>
 			<el-table-column
-        prop="name"
+        prop="maxNum"
         label="每日上限次数">
       </el-table-column>
 
@@ -56,104 +70,112 @@
     </el-table>
 
 		<el-pagination
-      @size-change="handleSizeChange"
+      @size-change="handleCurrentChange"
       @current-change="handleCurrentChange"
-      :current-page="currentPage4"
-      :page-sizes="[100, 200, 300, 400]"
-      :page-size="100"
+			@prev-click = 'handleCurrentChange'
+			@next-click = 'handleCurrentChange'
+      :page-sizes="[10]"
+      :page-size="itemNum"
 			background
       layout="total, sizes, prev, pager, next, jumper"
-      :total="400">
+      :total="total">
     </el-pagination>
 	</div>
 </template>
 
 <script>
+import axios from 'axios'
 
     export default {
       name:'infoShow',
-      components: {
-
-  		},
+      components: {},
     	data(){
     		return {
-					tableData: [{
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '2.0'
-          },{
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '2.0'
-          },{
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '2.0'
-          },{
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '2.0'
-          },{
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '2.0'
-          },{
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '2.0'
-          },{
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '2.0'
-          },{
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '2.0'
-          },{
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '2.0'
-          },{
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '2.0'
-          },],
-					currentPage4: 4,
+					tableData: [],
+					itemNum:10,
+					pgIndex:0,
+					total:0,
+					keyword:'',
+					status:'',
+					sortColumn:'',
+					beginTime:'',
+					endTime:'',
           multipleSelection:[],
-					form: {
-	          name: '',
-	          region: '',
-	          date1: '',
-	          date2: '',
-	          delivery: false,
-	          type: [],
-	          resource: '',
-	          desc: ''
-	        }
+					pickerOptions: {
+		        shortcuts: [{
+		          text: '最近一周',
+		          onClick(picker) {
+		            const end = new Date();
+		            const start = new Date();
+		            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+		            picker.$emit('pick', [start, end]);
+		          }
+		        }, {
+		          text: '最近一个月',
+		          onClick(picker) {
+		            const end = new Date();
+		            const start = new Date();
+		            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+		            picker.$emit('pick', [start, end]);
+		          }
+		        }, {
+		          text: '最近三个月',
+		          onClick(picker) {
+		            const end = new Date();
+		            const start = new Date();
+		            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+		            picker.$emit('pick', [start, end]);
+		          }
+		        }]
+		      },
+		      value2: '',
+					form: {}
     		}
     	},
 			created(){
+				this.getList();
 			},
 	  	methods: {
-				onSubmit() {
-	        console.log('submit!');
-	      },
-				handleSizeChange(val) {
-	        console.log(`每页 ${val} 条`);
-	      },
-	      handleCurrentChange(val) {
-	        console.log(`当前页: ${val}`);
-	      },
-        handleSelectionChange(val) {
-          this.multipleSelection = val;
-        },
-        delFun(scope){
-          console.log(scope);
-        },
+				search(){
+					let that = this;
+					that.pgIndex=1;
+					that.beginTime  = that.value2?new Date(that.value2[0]).format("yyyy-MM-dd hh:mm:ss"):'';
+					that.endTime  = that.value2?new Date(that.value2[1]).format("yyyy-MM-dd hh:mm:ss"):'';
+		      axios({
+		         method: 'get',
+						 url: '/ElecCertSD/certificateList',
+						 params:{
+							 pgIndex:that.pgIndex,
+							 pgCount:that.itemNum,
+							 sortColumn: 'gmt_create desc',
+							 keyword:that.form.name,
+							 beginTime:that.beginTime,
+		 					 endTime:that.endTime
+						 }
+		       }).then(function (res) {
+						 that.tableData = res.data.elements
+						 that.total = res.data.totalElements;
+		       });
+				},
+				handleCurrentChange(val){
+					this.pgIndex = val;
+					this.getList();
+				},
 				rowRouter(row){
+					sessionStorage.tableId = row.id;
 					this.$router.push({
 						'name':'shareListInfo'
 					})
+				},
+				getList(){
+					let that = this;
+		      axios({
+		         method: 'get',
+		         url: '/ElecCertSD/certificateList?pgIndex='+that.pgIndex+'&pgCount='+that.itemNum+'&keyword='+that.keyword+'&sortColumn=gmt_create+desc&beginTime='+that.beginTime+'&endTime='+that.endTime,
+		       }).then(function (res) {
+						 that.tableData = res.data.elements;
+						 that.total = res.data.totalElements;
+		       })
 				}
 	  	}
   	}
@@ -192,7 +214,6 @@
 				margin-bottom: 25px;
 			}
 			.el-col {
-				max-width: 300px;
         .btns	{
           border: 1px solid #DCDFE6;
           color: #fff;

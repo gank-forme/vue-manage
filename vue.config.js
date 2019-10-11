@@ -60,6 +60,14 @@ module.exports = {
           pathRewrite: {
 	          '^/ElecCertSD': '/ElecCertSD'
 	        }
+      },
+      '/web-reader': {
+          target: 'http://182.254.136.227:8085',
+          ws: true,
+          changeOrigin: true,
+          pathRewrite: {
+	          '^/web-reader': '/web-reader'
+	        }
       }
     }
   },

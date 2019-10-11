@@ -7,7 +7,7 @@
 				<el-row>
 					<el-col >
 					  <el-form-item label="筛选:">
-							<el-radio-group v-model="checkboxGroup1" >
+							<el-radio-group v-model="checkboxGroup1" @change='radioChange'>
 					      <el-radio border v-for="city in cities" :label="city" :key="city"></el-radio>
 					    </el-radio-group>
 					  </el-form-item>
@@ -28,36 +28,34 @@
 
 		<div class="cardBox">
 			<el-row :gutter="16">
-				<router-link :to="{ name: 'indexTab', params: {} }" v-for ='(i,index) in list'>
-				  <el-col :span="6" >
+				  <el-col :span="6" @click.native='toTab(i.port,i.typeName)' v-for ='(i,index) in list'>
 						<div class="wrap ">
 							<div class="clear">
-								<img class="left" :src="i.icon" alt="">
-								<p>{{i.tit}} {{i.status==1?"在用":(i.status==2?'对接中':'停用')}}</p>
-								<h3>添加时间：{{i.time}}</h3>
+								<img class="left" :src="i.imgUrl" alt="">
+								<p>{{i.typeName}} <span :class="i.statusName=='在用'?'color1':'color2'">{{i.statusName}}</span></p>
+								<h3>添加时间：{{i.gmtCreateStr}}</h3>
 							</div>
 						</div>
 
 					</el-col>
-				</router-link>
 			</el-row>
 		</div>
 		<el-pagination
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :current-page="currentPage4"
-      :page-sizes="[100, 200, 300, 400]"
-      :page-size="100"
-			background
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="400">
-    </el-pagination>
+		  background
+			@current-change="handleCurrentChange"
+			@prev-click = 'handleCurrentChange'
+			@next-click = 'handleCurrentChange'
+			:page-size='itemNum'
+		  layout="prev, pager, next"
+		  :total="total">
+		</el-pagination>
 	</div>
 </template>
 
 <script>
 
 import icon from '@/assets/img/icon.png'
+import axios from 'axios'
 
     export default {
     	data(){
@@ -65,101 +63,55 @@ import icon from '@/assets/img/icon.png'
 					input:'',
 					currentPage4: 4,
 					checkboxGroup1: '全部',
-	        cities: ['全部','在用','停用'],
-					list:[
-						{
-							icon:icon,
-							tit:'身份证',
-							stats:1,
-							time:'2019-12-23',
-						},{
-							icon:icon,
-							tit:'身份证',
-							stats:1,
-							time:'2019-12-23',
-						},{
-							icon:icon,
-							tit:'身份证',
-							stats:1,
-							time:'2019-12-23',
-						},{
-							icon:icon,
-							tit:'身份证',
-							stats:1,
-							time:'2019-12-23',
-						},{
-							icon:icon,
-							tit:'身份证',
-							stats:1,
-							time:'2019-12-23',
-						},{
-							icon:icon,
-							tit:'身份证',
-							stats:1,
-							time:'2019-12-23',
-						},{
-							icon:icon,
-							tit:'身份证',
-							stats:1,
-							time:'2019-12-23',
-						},{
-							icon:icon,
-							tit:'身份证',
-							stats:1,
-							time:'2019-12-23',
-						},{
-							icon:icon,
-							tit:'身份证',
-							stats:1,
-							time:'2019-12-23',
-						},{
-							icon:icon,
-							tit:'身份证',
-							stats:1,
-							time:'2019-12-23',
-						},{
-							icon:icon,
-							tit:'身份证',
-							stats:1,
-							time:'2019-12-23',
-						},{
-							icon:icon,
-							tit:'身份证',
-							stats:1,
-							time:'2019-12-23',
-						},{
-							icon:icon,
-							tit:'身份证',
-							stats:1,
-							time:'2019-12-23',
-						},{
-							icon:icon,
-							tit:'身份证',
-							stats:1,
-							time:'2019-12-23',
-						},{
-							icon:icon,
-							tit:'身份证',
-							stats:1,
-							time:'2019-12-23',
-						},
-
-					]
+	        cities: ['全部','在用','停用','对接中'],
+					list:[],
+					itemNum:16,
+					pgIndex:1,
+					total:100,
+					keyword:'',
+					status:''
     		}
     	},
     	components: {
 
 			},
 			created(){
+				this.getList();
 			},
 	  	methods: {
-
-				handleSizeChange(val) {
-	        console.log(`每页 ${val} 条`);
-	      },
-	      handleCurrentChange(val) {
-	        console.log(`当前页: ${val}`);
-	      },
+				getList(){
+					let that = this;
+		      axios({
+		         method: 'get',
+		         url: '/ElecCertSD/certificates?orgId='+sessionStorage.orgId+'&pgIndex='+that.pgIndex+'&pgCount='+that.itemNum+'&keyword='+that.keyword+'&status='+that.status,
+		       }).then(function (res) {
+						 that.list = res.data.elements
+						 that.total = res.data.totalElements;
+		       })
+				},
+				toTab(e,n){
+					sessionStorage.port=e;
+					sessionStorage.typeName=n;
+					this.$router.push({
+						name:'indexTab'
+					})
+				},
+				handleCurrentChange(val){
+					this.pgIndex = val;
+					this.getList();
+				},
+				radioChange(e){
+					if(e=='全部'){
+						this.status=''
+					}else if(e=='在用'){
+						this.status=1
+					}else if(e=='停用'){
+						this.status=2
+					}else if(e=='对接中'){
+						this.status=0
+					}
+					this.getList();
+				},
 				rowRouter(row){
 					this.$router.push({
 						'name':'indexInfo'
@@ -233,17 +185,22 @@ import icon from '@/assets/img/icon.png'
 					img {
 						width: 60px;
 						margin-top: 20px;
-						margin-left: 20px;
+						margin-left: 5%;
 					}
 					p {
 						position: absolute;
-						left: 90px;
-						top: 25px;
-						font-size: 16px;
+						left: 33%;
+						top: 17px;
+						right: 10px;
+						font-size: 14px;
 						color: #FFFFFF;
 						span {
 							font-size: 12px;
-							padding: 2px 5px;
+							padding: 0px 5px;
+							border-radius: 3px;
+							margin-left: 5px;
+							display: inline-block;
+							margin-top: 5px;
 						}
 						span.color1 {
 							border:1px solid #64BE50;
@@ -262,8 +219,8 @@ import icon from '@/assets/img/icon.png'
 						font-size: 12px;
 						color: #999999;
 						position: absolute;
-						left: 90px;
-						bottom: 30px;
+						left: 33%;					
+						bottom: 20px;
 					}
 
 				}

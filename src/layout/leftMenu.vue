@@ -16,32 +16,24 @@
                 :active-text-color="menuObj.activeTextColor"
                 :style="{width:sidebar.width+'px'}"
                 >
-                    <template v-for="(item,index) in permission_routers">
+                    <template v-for="(item,index) in data.permissionList" >
                         <!--表示 有一级菜单-->
-                        <router-link  v-if="!item.hidden && item.noDropdown" :to="item.path+'/'+item.children[0].path" :key="index">
-                            <el-menu-item class="dropItem"
-                                :index="item.path+'/'+item.children[0].path"
-                                >
-                                <img width="25" style="margin-right:5px;"  v-if="item.meta.icon" :icon-class="item.meta.icon" :src='item.meta.icon'></img>
-                                <span v-if="item.meta.title" slot="title">{{ $t(`commons.${item.name}`)}}</span>
-                            </el-menu-item>
-                        </router-link>
+                        <el-menu-item class="dropItem" v-if='item.childPermission.length == 0' :index='item.name' @click.native='toNav(item.name)'>
+                            <img width="25" style="margin-right:5px;" :src='getImgSrc(item.icon)'></img>
+                            <span  slot="title">{{item.permName}}</span>
+                        </el-menu-item>
 
                         <!--表示 有二级或者多级菜单 -->
-                        <el-submenu v-if="item.children  && item.children.length >= 1 && !item.hidden && !item.noDropdown"  :index="item.path" :key="index">
+                        <el-submenu v-else :index='item.permission'>
                             <template slot="title">
-                              <img width="25" style="margin-right:5px;" v-if="item.meta.icon" :icon-class="item.meta.icon" :src='item.meta.icon'></img>
-                                <!-- <icon-svg v-if="item.meta.icon" :icon-class="item.meta.icon" /> -->
-                                <span v-if="item.meta.title" slot="title">{{ $t(`commons.${item.name}`)}}</span>
+                              <img width="25" style="margin-right:5px;"  :src='getImgSrc(item.icon)'></img>
+                              <span slot="title">{{item.permName}}</span>
                             </template>
                             <!--直接定位到子路由上，子路由也可以实现导航功能-->
-                            <router-link v-for="(citem,cindex) in item.children" :to="getIindex(citem,item,cindex)"  :key="cindex">
-                                <el-menu-item
-                                    v-if="citem.meta.routerType != 'topmenu' && citem.meta.title && !citem.hidden"
-                                    :index="getIindex(citem,item,cindex)">
-                                    <span slot="title"> {{ $t(`commons.${citem.name}`)}}</span>
-                                </el-menu-item>
-                            </router-link>
+
+                            <el-menu-item v-for='i in item.childPermission' :index=' i.name ' @click.native='toNav(i.name)'>
+                                <span slot="title"> {{ i.permName }}</span>
+                            </el-menu-item>
                         </el-submenu>
                     </template>
             </el-menu>
@@ -50,54 +42,54 @@
 </template>
 
 <script>
+import { asyncRouterMap, constantRouterMap ,allRouter} from '@/router'
 import { mapGetters } from 'vuex'
 import * as mUtils from "@/utils/mUtils";
 import logoImg from "@/assets/img/logo.png";
 import axios from 'axios'
-
-
+import store from '@/store/store.js'
 
 
 
 export default {
   name: "left-Menu",
+  props:['data'],
   data() {
     return {
        menuObj:{
           // bgColor:'#121f3e',
          textColor:'#fff',
          activeTextColor:'#eee',
+         permission_routers:[]
        },
        logo:logoImg,
-       // navImg:[nav1,nav2,nav3,nav4,nav5]
     };
   },
   computed:{
       ...mapGetters([
-        'permission_routers',
         'isCollapse',
         'sidebar',
         'menuIndex'
       ]),
   },
   created(){
-    this.getlist();
+    //console.log(store.state.userData);
+
   },
   mounted(){
+    //this.menuObj.permission_routers=store.state.userData.permissionList;
   },
   methods: {
-    getIindex(citem,item,cindex){
-      return (citem.meta.titleList)?item.path+'/'+citem.path+'/'+citem.meta.titleList[0].path:item.path+'/'+citem.path;
+    toNav(e){
+      console.log(e);
+      this.$router.push({
+        name:e
+      })
     },
-    getlist(){
-      let that = this;
-      console.log(axios);
-      axios({
-         method: 'get',
-         url: '/ElecCertSD/userinfo',
-       }).then(function (res) {
-
-       })
+    getImgSrc(e){
+      if(e!=''){
+        return require("@/assets/img/"+e+".png");
+      }
     }
   }
 };

@@ -1,51 +1,33 @@
 <template>
   	<div class="login_page">
-	  	<transition name="form-fade" mode="in-out">
-	  		<section class="form_contianer">
-			    <div class='titleArea rflex'>
-    					<span class='title'>山东电子证照</span>
-    			</div>
-		    	<el-form :model="loginForm" :rules="rules" ref="loginForm" class="loginForm">
-					<el-form-item prop="username" class="login-item">
-					    <span class="loginTips"><icon-svg icon-class="iconuser" /></span>
-						<el-input @keyup.enter.native ="submitForm('loginForm')"  class="area" type="text" placeholder="用户名" v-model="loginForm.username" ></el-input>
-					</el-form-item>
-					<el-form-item prop="password" class="login-item">
-					    <span class="loginTips"><icon-svg icon-class="iconLock" /></span>
-						<el-input @keyup.enter.native ="submitForm('loginForm')" class="area" type="password" placeholder="密码" v-model="loginForm.password"></el-input>
-					</el-form-item>
+      <div class="topTit" style="text-align: center;">
+      	<img src="@/assets/img/tit.png" style="width: 600px;margin-bottom: 10px;" alt="">
+      </div>
+      	<div class="login" >
+      		<div class="message" style="font-size: 24px;">登录</div>
+      		<!--<div id="darkbannerwrap"></div>-->
 
-          <el-form-item prop="password" class="login-item">
-					    <span class="loginTips"><icon-svg icon-class="iconLock" /></span>
-						<el-input @keyup.enter.native ="submitForm('loginForm')" class="area" type="text" placeholder="验证" v-model="loginForm.code"></el-input>
-            <img src="/ElecCertSD/authImage" alt="">
+      			<input id="userName" name="userName" v-model='loginForm.username' placeholder="用户名" type="text"
+      				autocomplete="off">
+      			<hr class="hr15">
+      			<input id="password" name="password" v-model='loginForm.password' placeholder="密码" type="password"
+      				autocomplete="off">
+      			<hr class="hr15">
+      			<div style="position: relative">
+      				<input type="text" id="code" name="code" v-model='loginForm.code' placeholder="验证码" maxlength="4" >
+      				<img  id="img" :src="loginForm.img" @click="changeImg" style="vertical-align: middle;position: absolute;right: 20px;top: 10px;"/>
+      			</div>
 
-					</el-form-item>
-					<el-form-item>
-				    	<el-button type="primary"  @click="submitForm('loginForm')" class="submit_btn">登 录</el-button>
-				  	</el-form-item>
-					<div class="tiparea">
-						<p class="wxtip">温馨提示：</p>
-						<p class="tip">用户名为：admin/editor<span>(可用于切换权限)</span></p>
-						<p class="tip">密码为：123456</p>
-					</div>
-					<div class="sanFangArea">
-						<p class="title">第三方账号登录</p>
-						<ul class="rflex">
-							<li @click="loginByWechat">
-						       <icon-svg icon-class="iconwechat" />
-							</li>
-							<li>
-							    <icon-svg icon-class="iconweibo" />
-							</li>
-							<li>
-							    <icon-svg icon-class="iconGithub" />
-							</li>
-						</ul>
-				    </div>
-				</el-form>
-	  		</section>
-	  	</transition>
+      			<hr class="hr15">
+      			<button style="width: 100%;" type="submit"
+      				@click="login">登录</button>
+      			<hr class="hr20">
+      			<span id="info" style="color: red"></span>
+      	</div>
+      <div style="text-align: center;width: 100%;margin-top: 150px;position: absolute;bottom: 20px;">
+      	<p style="color: #fff;font-size: 16px;margin-bottom: 20px;">建议使用谷歌浏览器 <a href="" >点击下载MAC版</a> | <a target="_blank" href="" >点击下载Windows版</a></p>
+      	<!--<img src="../static/img/bot.png" style="width: 300px;" alt="">-->
+      </div>
   	</div>
 </template>
 
@@ -61,11 +43,12 @@
 	    data(){
 			return {
 				logo:logoImg,
+        loading:true,
 				loginForm: {
-					username: 'admin',
-					password: '123456',
-          code:''
-
+					username: 'gkx123',
+					password: 'qwe123',
+          code:'',
+          img:'/ElecCertSD/authImage?'+Math.random()
 				},
 				rules: {
 					username: [
@@ -79,9 +62,11 @@
 			}
 		},
 		mounted(){
+      setToken("Token",'admin');
 		},
 		methods: {
-			loginByWechat(){
+			changeImg(){
+        this.loginForm.img = '/ElecCertSD/authImage?'+Math.random();
 			},
 			showMessage(type,message){
         this.$message({
@@ -89,22 +74,17 @@
             message: message
         });
       },
-	    submitForm(loginForm) {
-  			// this.$refs[loginForm].validate((valid) => {
-  			// 	if (valid) {
-  			// 		let userinfo = this.loginForm;
-  			// 		login(userinfo).then(res => {
-  			// 			let userList = res.data.userList;
-  			// 			setToken("Token",userList.token)
-  			// 			this.$router.push({ path: '/' })
-  			// 			this.$store.dispatch('initLeftMenu'); //设置左边菜单始终为展开状态
-  			// 		})
-  			// 	}
-  			// });
+	    login() {
+        const loading = this.$loading({
+          lock: true,
+          text: 'Loading',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)'
+        });
         let that = this;
         let data ={
-          password:'q12345',
-          userName:'liyanbo',
+          password:that.loginForm.password,
+          userName:that.loginForm.username,
           code:that.loginForm.code
         };
         axios({
@@ -113,127 +93,146 @@
            url: '/ElecCertSD/login',
            data:qs.stringify(data)
          }).then(function (res) {
-
+           loading.close();
+           if(res.data.error==0){
+             that.$router.push({ path: '/' });
+           }else{
+             that.changeImg();
+             that.$message.error(res.data.message);
+           }
          })
-			}
+			},
+
 		}
 	}
 </script>
 
 <style lang="less" scoped>
-	.login_page{
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		background: url(../assets/img/bg9.jpg) no-repeat center center;
-		background-size: 100% 100%;
-	}
-	.form_contianer{
-		position: absolute;
-		top: 50%;
-        left: 50%;
-		transform: translate(-50%,-50%);
-		background: #fff;
-		width:370px;
-		border-radius: 5px;
-		padding: 25px;
-		text-align: center;
-		.titleArea{
-			justify-content: center;
-   			align-items: center;
-			text-transform: uppercase;
-			font-size: 22px;
-			width: 100%;
-			padding-bottom: 20px;
-			.logo{
-				width: 40px;
-    			margin-right: 10px;
-			}
-			.title{
-				i{
-				   color: #FF6C60;
-				}
-			}
-		}
-
-		.loginForm{
-			.submit_btn{
-				width: 100%;
-				padding:13px 0;
-				font-size: 16px;
-			}
-			.loginTips{
-				position: absolute;
-				left: 10px;
-				z-index: 20;
-				// color: #FF7C1A;
-				font-size: 18px;
-				top: 50%;
-				transform: translateY(-50%);
-			}
-	    }
-	}
-
-	.manage_tip{
-		margin-bottom:20px;
-		.title{
-			font-family: cursive;
-			font-weight: bold;
-			font-size: 26px;
-			color:#fff;
-		}
-		.logo{
-			width:60px;
-			height:60px;
-		}
-	}
-
-	.tiparea{
-		text-align:left;
-		font-size: 12px;
-		color: #4cbb15;
-		padding: 10px 0;
-		.tip{
-			margin-left: 54px;
-		}
-	}
-
-	.form-fade-enter-active, .form-fade-leave-active {
-	  	transition: all 1s;
-	}
-	.form-fade-enter, .form-fade-leave-active {
-	  	transform: translate3d(0, -50px, 0);
-	  	opacity: 0;
-	}
-	.loginForm{
-		.el-button--primary{
-			background-color:#FF7C1A;
-			border:1px solid #FF7C1A;
-		}
-	}
-	.sanFangArea{
-		border-top: 1px solid #DCDFE6;
-		padding: 10px 0;
-		display: none;
-		.title{
-			font-size: 14px;
-			color: #8b9196;
-			margin-bottom: 10px;
-		}
-		ul{
-			li{
-				flex:1;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				cursor: pointer;
-				.svg-icon{
-					font-size: 24px;
-				}
-			}
-		}
-	}
-  input {
-    color: #ddd;
+@media (min-width: 1400px){
+  .login {
+      margin-top: 10px !important;
   }
+  .topTit {
+      padding-top: 100px!important;
+  }
+}
+body,html{
+  min-height:100%;
+}
+.login_page{
+  background:url(../assets/img/bg.jpg) no-repeat center;
+  background-size: cover;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+a{
+  color:#27A9E3;
+  text-decoration:none;
+  cursor:pointer;
+}
+.login{
+  /*margin: 50px auto 0 auto;*/
+  margin-top: 20px;
+  min-height: 320px;
+  max-width: 420px;
+  padding:10px 20px;
+  background: url(../assets/img/ioa.png) no-repeat center;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 4px;
+  /* overflow-x: hidden; */
+  box-sizing: border-box;
+}
+a.logo{
+  display: block;
+  height: 58px;
+  width: 167px;
+  margin: 0 auto 30px auto;
+  background-size: 167px 42px;
+}
+.message {
+  margin: 10px 0 0 -58px;
+  padding: 18px 10px 18px 60px;
+  /*background: #189F92;*/
+  position: relative;
+  color: #fff;
+  font-size: 18px;
+  text-align: center;
+}
+#darkbannerwrap {
+  // background: url(../img/login/aiwrap.png);
+  width: 18px;
+  height: 10px;
+  margin: 0 0 20px -58px;
+  position: relative;
+}
+
+input[type=text],
+input[type=file],
+input[type=password],
+input[type=email], select {
+  border: 1px solid #DCDEE0;
+  vertical-align: middle;
+  border-radius: 3px;
+  height: 50px;
+  font-size: 14px;
+  color: #555555;
+  outline:none;
+  width:100%;
+  text-indent: 16px;
+}
+input[type=text]:focus,
+input[type=file]:focus,
+input[type=password]:focus,
+input[type=email]:focus, select:focus {
+  border: 1px solid #27A9E3;
+}
+
+
+input[type=submit],
+button{
+  display: inline-block;
+  vertical-align: middle;
+  padding: 12px 24px;
+  margin: 0px;
+  font-size: 18px;
+  line-height: 24px;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  color: #ffffff;
+  background-color: #5285ff;
+  border-radius: 3px;
+  border: none;
+  -webkit-appearance: none;
+  outline:none;
+  width:100%;
+}
+hr.hr15 {
+  height: 15px;
+  border: none;
+  margin: 0px;
+  padding: 0px;
+  width: 100%;
+}
+hr.hr20 {
+  height: 20px;
+  border: none;
+  margin: 0px;
+  padding: 0px;
+  width: 100%;
+}
+
+.copyright{
+  font-size:14px;
+  color:rgba(255,255,255,0.85);
+  display:block;
+  position:absolute;
+  bottom:15px;
+  right:15px;
+}
 </style>

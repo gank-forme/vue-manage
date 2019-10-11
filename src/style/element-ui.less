@@ -348,19 +348,7 @@
 .el-form-item__label {
    color: #fff !important;
 }
-.comon {
-  .el-dialog {
-    .el-input .el-input__inner, .el-textarea__inner {
-      background: #fff !important;
-      // border: 1px solid #DCDFE6;
-      color: #606266 !important;
-    }
-    .el-form-item__label {
-       color: #606266 !important;
-    }
-  }
 
-}
 .info .el-form-item__label,.infoMana .el-form-item__label {
    opacity: 0.5;
 }
@@ -381,9 +369,13 @@
 }
 .el-table tbody tr:hover>td {
   background: rgba(255,255,255,0.10) !important;
+  overflow: hidden;
 }
 .el-table tbody tr:hover>td .del,.el-table tbody tr:hover>td .looktxt{
-  display: inline-block;
+  display: inline;
+}
+.el-table .cell {
+  line-height: 24px !important;
 }
 
 .el-table td, .el-table th.is-leaf {
@@ -415,13 +407,30 @@
     color: rgba(255,255,255,0.20) !important;
 }
 #app {
+  .el-table {
+    min-height: 450px;
+    font-size: 13px;
+  }
   .el-input .el-input__inner,.el-textarea__inner {
     background: rgba(255,255,255,0.05);
     // border: 1px solid rgba(255,255,255,0.50);
-    color: #fff ;
+    color: #fff !important;
   }
   .loginForm .el-input .el-input__inner,.el-textarea__inner {
     color: #333 ;
+  }
+  .comon {
+    .el-dialog {
+      .el-input .el-input__inner, .el-textarea__inner {
+        background: #fff !important;
+        // border: 1px solid #DCDFE6;
+        color: #606266 !important;
+      }
+      .el-form-item__label {
+         color: #606266 !important;
+      }
+    }
+
   }
   .el-radio--mini.is-bordered {
     padding: 5px 20px 0 10px;

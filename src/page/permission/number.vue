@@ -1,30 +1,29 @@
 <template>
 	<div class="table comon">
-    <p>系统权限管理 / 角色管理</p>
+    <p>系统权限管理 / 用户管理</p>
 		<div class="content">
-			<h1>角色管理</h1>
+			<h1>用户管理</h1>
 			<el-form class="formBox clear" ref="form" :model="form" :inline='true'>
         <el-row >
           <el-col :span="9">
-             <el-form-item label="角色名称">
+             <el-form-item label="用户">
                <el-input v-model="form.desc"></el-input>
              </el-form-item>
            </el-col>
 					 <el-col :span="9">
-              <el-form-item label="所属角色">
+              <el-form-item label="角色">
                 <el-select v-model="form.region" placeholder="请选择">
-									 <el-option label="区域一" value="shanghai"></el-option>
-									 <el-option label="区域二" value="beijing"></el-option>
+									 <el-option v-for='i in selArr' :label="i.roleName" :value="i.id"></el-option>
 								 </el-select>
               </el-form-item>
             </el-col>
            <el-col :span="2">
-              <el-button class="searchBtn" type="primary">查询</el-button>
+              <el-button class="searchBtn" type="primary" @click='search'>查询</el-button>
            </el-col>
          </el-row>
 				 <el-row >
            <el-col :span="9">
-						 <el-button class="btns" @click="dialogFormVisible = true"><img src="@/assets/img/add.png" alt="">新增角色</el-button>
+						 <el-button class="btns" @click="edit(0)"><img src="@/assets/img/add.png" alt="">新增用户</el-button>
            </el-col>
           </el-row>
 			</el-form>
@@ -38,129 +37,94 @@
     tooltip-effect="dark"
     style="width: 100%"
     >
-
       <el-table-column
         type="index"
         label="序号"
         >
       </el-table-column>
       <el-table-column
-        prop="name"
-        label="账号名称"
+        prop="realName"
+        label="姓名"
         >
       </el-table-column>
-      <el-table-column
-        prop="address"
-        label="真实姓名">
+			<el-table-column
+        prop="organization.orgName"
+        label="所在单位"
+        >
       </el-table-column>
 			<el-table-column
-        prop="name"
-        label="所属角色">
+        prop="role.roleName"
+        label="角色"
+        >
       </el-table-column>
 			<el-table-column
-        prop="name"
-        label="最后操作人">
+        prop="userName"
+        label="登录账号"
+        >
       </el-table-column>
 			<el-table-column
-        prop="name"
-        label="最后操作时间">
+        prop="phone"
+        label="联系电话"
+        >
       </el-table-column>
-			<el-table-column
-				width='50'
-				label="操作">
-				<template slot-scope="scope">
-          <el-switch active-color="#13ce66" v-model="scope.row.delivery"></el-switch>
-        </template>
-			</el-table-column>
       <el-table-column >
         <template slot-scope="scope">
-          <img class="del" @click='delFun(scope)' src="@/assets/img/edit.png" alt="">
-          <span class="looktxt">编辑</span>
-					<span class="looktxt em">|</span>
-					<img class="del" @click='delFun(scope)' src="@/assets/img/delete.png" alt="">
-          <span class="looktxt">删除</span>
+					<i class="del" @click='edit(scope)'>
+						<img  src="@/assets/img/edit.png" alt="">
+						<span class="looktxt">编辑</span>
+					</i>
+					<i class="del" @click='delFun(scope)'>
+						<img   src="@/assets/img/delete.png" alt="">
+						<span class="looktxt">删除</span>
+					</i>
         </template>
       </el-table-column>
     </el-table>
 
 		<el-pagination
-      @size-change="handleSizeChange"
+      @size-change="handleCurrentChange"
       @current-change="handleCurrentChange"
-      :current-page="currentPage4"
-      :page-sizes="[100, 200, 300, 400]"
-      :page-size="100"
+			@prev-click = 'handleCurrentChange'
+			@next-click = 'handleCurrentChange'
+      :page-sizes="[10]"
+      :page-size="itemNum"
 			background
       layout="total, sizes, prev, pager, next, jumper"
-      :total="400">
+      :total="total">
     </el-pagination>
 
 
-		<el-dialog title="选择部门" :visible.sync="dialogDw">
-			<div class="wrap">
-				<h1>
-					<span v-for='(i,index) in chats' :class="chatInd==index && Arrs[i].length>0?'act':(Arrs[i].length==0?'disabled':'')" @click='toChat(index,i)' >{{i}}</span>
-				</h1>
-				<div class="cityBtn">
-					  山东省
-				</div>
-				<div class="itemWrap" id='itemWrap'>
-					<el-row v-for='i in chats' :gutter="16" :id='i'>
-						<div v-if='Arrs[i].length>0'>
-							<el-col :span="1" >
-								{{i}}
-		           </el-col>
-		           <el-col :span="22">
-								 <el-row :gutter="8">
-										<span :id='i+index' v-for='(item,index) in Arrs[i]' class='items' :class="selId==i+index?'act':''" @click='selItem(i,index)' >{{item}}</span>
-								 </el-row>
-		           </el-col>
-						</div>
-	         </el-row>
-				</div>
 
-			</div>
-
-		  <div slot="footer" class="dialog-footer">
-		    <el-button @click="dialogDw = false">返 回</el-button>
-		    <el-button type="primary" @click="dialogDw = false">提 交</el-button>
-		  </div>
-		</el-dialog>
-
-
-
-		<el-dialog title="添加接口控制" :visible.sync="dialogFormVisible">
+		<el-dialog title="修改用户" :visible.sync="dialogFormVisible">
 		  <el-form :model="form">
-				<el-form-item label="选择部门" :label-width="formLabelWidth">
-		      <el-select v-model="form.region" placeholder="请选择活动区域">
-		        <el-option label="区域一" value="shanghai"></el-option>
-		        <el-option label="区域二" value="beijing"></el-option>
-		      </el-select>
+				<el-form-item label="用户姓名" :label-width="formLabelWidth">
+		      <el-input v-model="editForm.realName"></el-input>
 		    </el-form-item>
-		    <el-form-item label="每日上限次数" :label-width="formLabelWidth">
-		      <el-input v-model="form.resource"></el-input>
+				<el-form-item label="登录账号" :label-width="formLabelWidth">
+		      <el-input v-model="editForm.userName"></el-input>
 		    </el-form-item>
-				<el-form-item label="共享到期时间" :label-width="formLabelWidth">
-					<el-date-picker type="date" placeholder="选择日期" v-model="form.date1" style="width: 100%;"></el-date-picker>
-				</el-form-item>
-				<el-form-item label="调用IP" :label-width="formLabelWidth">
-					<el-input v-model="form.ip"></el-input>
-				</el-form-item>
-				<el-form-item label="返回字段" :label-width="formLabelWidth">
+				<el-form-item label="用户密码" :label-width="formLabelWidth">
+		      <el-input v-model='password'></el-input>
+		    </el-form-item>
+				<el-form-item label="联系电话" :label-width="formLabelWidth">
+		      <el-input v-model="editForm.phone"></el-input>
+		    </el-form-item>
 
-				    <el-checkbox-group v-model="form.type">
-				      <el-checkbox label="123" name="type"></el-checkbox>
-				      <el-checkbox label="2323" name="type"></el-checkbox>
-				      <el-checkbox label="123123123" name="type"></el-checkbox>
-				      <el-checkbox label="啥电费1" name="type"></el-checkbox>
-							<el-checkbox label="1231231233" name="type"></el-checkbox>
-				      <el-checkbox label="啥电费" name="type"></el-checkbox>
-				    </el-checkbox-group>
+				<el-form-item label="所在单位" :label-width="formLabelWidth">
+					<el-select v-model="editForm.orgId" placeholder="请选择">
+						 <el-option v-for='i in orgArr' :label="i.orgName" :value="i.id"></el-option>
+					 </el-select>
+		    </el-form-item>
+				<el-form-item label="用户角色" :label-width="formLabelWidth">
+					<el-select v-model="editForm.roleId" placeholder="请选择">
+						 <el-option v-for='i in selArr' :label="i.roleName" :value="i.id"></el-option>
+					 </el-select>
+		    </el-form-item>
 
-			  </el-form-item>
 		  </el-form>
 		  <div slot="footer" class="dialog-footer">
 		    <el-button @click="dialogFormVisible = false">返 回</el-button>
-		    <el-button type="primary" @click="dialogFormVisible = false">提 交</el-button>
+		    <el-button type="primary" @click="addFun">保 存</el-button>
 		  </div>
 		</el-dialog>
 	</div>
@@ -168,6 +132,7 @@
 
 <script>
 
+import axios from 'axios'
 
 import vPinyin from '@/lang/vue-py.js';
 
@@ -178,73 +143,23 @@ export default {
 	},
 	data(){
 		return {
-			tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '2.0',
-				delivery: false
-      },{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '2.0',
-				delivery: true
-      },{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '2.0',
-				delivery: true
-      },{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '2.0',
-				delivery: true
-      },{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '2.0',
-				delivery: true
-      },{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '2.0',
-				delivery: true
-      },{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '2.0',
-				delivery: true
-      },{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '2.0',
-				delivery: true
-      },{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '2.0',
-				delivery: true
-      },{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '2.0',
-				delivery: false
-      },],
-			currentPage4: 4,
-      multipleSelection:[],
+			selArr:[],
+			orgArr:[],
+			tableData: [],
+			itemNum:10,
+			pgIndex:0,
+			total:0,
+			keyword:'',
+			status:'',
+			sortColumn:'',
+			multipleSelection:[],
+			editForm: {},
+			form: {},
+			password:'',
+
 			dialogDw:false,
 			dialogFormVisible: false,
       formLabelWidth: '120px',
-			form: {
-        name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: '',
-				ip:''
-      },
 			chatInd:0,
 			selId:'',
 			chats:['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'],
@@ -256,9 +171,30 @@ export default {
 		}
 	},
 	created(){
-		this.chatList(this.bmArr);
+		this.getList();
+		this.getOp();
+		this.getOrg();
+
 	},
 	methods: {
+		search(){
+			let that = this;
+			that.pgIndex=1;
+			axios({
+				 method: 'get',
+				 url: '/ElecCertSD/users',
+				 params:{
+					 pgIndex:that.pgIndex,
+					 pgCount:that.itemNum,
+					 sortColumn: 'gmt_create desc',
+					 roleId:that.form.region,
+					 keyword:that.form.desc
+				 }
+			 }).then(function (res) {
+				 that.tableData = res.data.elements
+				 that.total = res.data.totalElements;
+			 });
+		},
 		scrollToBottom(e){
       this.$nextTick(() => {
         let wrap = document.getElementById('itemWrap'); // 获取对象
@@ -268,42 +204,111 @@ export default {
       })
     },
 		onSubmit() {
-      console.log('submit!');
-    },
-		handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
-    },
-    handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
-    },
-    handleSelectionChange(val) {
-      this.multipleSelection = val;
-    },
-    delFun(scope){
-      console.log(scope);
-    },
-		rowRouter(row){
-			this.$router.push({
-				'name':'shareListInfo'
-			})
+			console.log('submit!');
 		},
-		chatList(e){
-			let that =this;
-			for(var i=0;i<that.chats.length;i++){
-				that.Arrs[that.chats[i]]=[];
-				for(var j=0;j<e.length;j++){
-					if(vPinyin.chineseToPinYin(e[j]).charAt(0)==that.chats[i]){
-						that.Arrs[that.chats[i]].push(e[j]);
-					}
-				}
+		handleCurrentChange(val){
+			this.pgIndex = val;
+			this.getList();
+		},
+		delFun(scope){
+			let that = this;
+			this.$confirm('确认删除？')
+				.then(_ => {
+					that.del(scope.row.id);
+				})
+				.catch(_ => {});
+		},
+		del(e){
+			let that = this;
+			axios({
+				 method: 'DELETE',
+				 url: '/ElecCertSD/user/'+e,
+			 }).then(function (res) {
+				 that.getList();
+			 })
+		},
+
+		getList(){
+			let that = this;
+			axios({
+				 method: 'get',
+				 url: '/ElecCertSD/users?pgIndex='+that.pgIndex+'&pgCount='+that.itemNum+'&keyword='+that.keyword+'&sortColumn=gmt_create+desc',
+			 }).then(function (res) {
+				 that.tableData = res.data.elements;
+				 that.total = res.data.totalElements;
+			 })
+		},
+		getOp(){
+			let that = this;
+			axios({
+				 method: 'get',
+				 url: '/ElecCertSD/roles',
+			 }).then(function (res) {
+				 that.selArr = res.data.elements;
+			 })
+		},
+		getOrg(){
+			let that = this;
+			axios({
+				 method: 'get',
+				 url: '/ElecCertSD/organizations?type=0',
+			 }).then(function (res) {
+				 that.orgArr = res.data.elements;
+			 })
+		},
+		edit(scope){
+			// this.getGenerate();
+			this.dialogFormVisible=true;
+			if(scope!=0) {
+				this.getEditInfo(scope.row.id);
+				this.subType = 1;
+			}else{
+				this.editForm={};
+				this.subType = 0;
 			}
+
 		},
-		toChat(e,i){
-			this.chatInd=e;
-			this.scrollToBottom(i);
+		getEditInfo(e){
+			let that = this;
+			axios({
+				 method: 'get',
+				 url: '/ElecCertSD/user/'+e,
+			 }).then(function (res) {
+				 that.editForm = res.data;
+				 that.id =e;
+			 })
 		},
-		selItem(m,n){
-			this.selId = m+n;
+		addFun(){
+			let that = this;
+			let id,method;
+			if(that.subType==0){
+				id='0';
+				method='POST';
+			}else{
+				id=that.id+'';
+				method='PUT';
+			}
+			let data ={
+				password:that.password,
+				orgId:that.editForm.orgId,
+				id:id,
+				phone:that.editForm.phone,
+				realName:that.editForm.realName,
+				roleId:that.editForm.roleId,
+				userName:that.editForm.userName
+			};
+
+			axios({
+				 method: method,
+				 url: '/ElecCertSD/user',
+				 data:data
+			 }).then(function (res) {
+				 if(res.data.error==0){
+					 	that.dialogFormVisible=false;
+					 	that.editForm={};
+						that.getList();
+				 }
+			 })
 		}
 	}
 }
@@ -317,20 +322,25 @@ export default {
 		font-size: 14px;
 		color: #FFFFFF;
 	}
-  .del {
-    display: none;
-    width: 15px;
-    vertical-align: middle;
-    cursor: pointer;
-  }
+	.del {
+		display: none;
+		cursor: pointer;
+		margin-right: 10px;
+		color: #32ABFF;
+		img {
+			width: 15px;
+			vertical-align: middle;
+			margin-right: 2px;
+		}
+		span {
+			font-size: 12px;
+
+		}
+	}
 	.looktxt {
 		display: none;
 		color: #32ABFF;
 		margin-left: 5px;
-	}
-	.em {
-		color: #ddd !important;
-		margin-right: 5px;
 	}
 	.content {
 		margin-top: 15px;

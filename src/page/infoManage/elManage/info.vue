@@ -6,28 +6,20 @@
 
 			<el-form class="formBox clear" ref="form" :model="form" label-width="80px">
 				<el-form-item label="模板状态">
-					 <el-switch active-color="#13ce66" v-model="form.delivery"></el-switch>
+					 <el-switch active-color="#13ce66" v-model="switchFlag"></el-switch>
+			  </el-form-item>
+				<el-form-item label="模板名称">
+					 <span class="vals">{{form.tempName}}</span>
 			  </el-form-item>
 				<el-form-item label="模板版本">
-					 <span class="vals">123123123123</span>
+					 <span class="vals">{{form.version}}</span>
 			  </el-form-item>
-				<el-form-item label="模板状态">
-					 <span class="vals">123123123123</span>
-			  </el-form-item>
-				<el-form-item label="模板状态">
-					 <span class="vals">123123123123</span>
-			  </el-form-item>
-				<el-form-item label="模板状态">
-					 <span class='items' v-for='i in 11'>是的</span>
-			  </el-form-item>
-				<el-form-item label="模板状态">
-					<div class="ofdBox">
-					 <img src="" alt="">
-					 <img src="" alt="">
-				 </div>
+				<el-form-item label="模板预览">
+					<iframe class="ofdBox" :src='form.ofdUrl'>
+				 </iframe>
 			  </el-form-item>
 				<el-form-item label="">
-					<el-button type="primary">保存更改</el-button>
+					<el-button type="primary" @click='update'>保存更改</el-button>
 					<el-button class="btns">返回</el-button>
 			  </el-form-item>
 			</el-form>
@@ -37,39 +29,59 @@
 </template>
 
 <script>
+import axios from 'axios'
 
     export default {
     	data(){
     		return {
-
-					currentPage4: 4,
-					form: {
-	          name: '',
-	          region: '',
-	          date1: '',
-	          date2: '',
-	          delivery: true,
-	          type: [],
-	          resource: '',
-	          desc: ''
-	        }
+					switchFlag:'',
+					form: {}
     		}
     	},
     	components: {
 
 			},
 			created(){
+				this.getTabData();
 			},
 	  	methods: {
 				onSubmit() {
 	        console.log('submit!');
 	      },
-				handleSizeChange(val) {
-	        console.log(`每页 ${val} 条`);
-	      },
-	      handleCurrentChange(val) {
-	        console.log(`当前页: ${val}`);
-	      }
+				getTabData(){
+					let that = this;
+		      axios({
+		         method: 'get',
+		         url: '/ElecCertSD/ofdTemplate/'+sessionStorage.elId,
+		       }).then(function (res) {
+						 that.form = res.data;
+						 if(that.form.status==1){
+							 that.switchFlag =true
+						 }else{
+							 that.switchFlag =false
+						 }
+		       })
+				},
+				update(){
+					let that = this;
+					let data = {
+						id: sessionStorage.elId,
+						status: that.switchFlag?1:2
+					};
+		      axios({
+		         method: 'PUT',
+		         url: '/ElecCertSD/ofdTemplate',
+						 data:data
+		       }).then(function (res) {
+						 that.$message({
+							 message: '恭喜你，这是一条成功消息',
+				 		 	 type: 'success'
+			       });
+						 setTimeout(function(){
+							 history.go(-1);
+						 },1000)
+		       })
+				},
 	  	}
   	}
 </script>
@@ -118,8 +130,8 @@
 
 			.ofdBox {
 				margin-bottom: 10px;
-				width: 220px;
-				height: 280px;
+				width: 90%;
+				height: 500px;
 				padding: 20px;
 				background: rgba(255,255,255,0.10);
 				border: 1px dotted rgba(255,255,255,0.50);

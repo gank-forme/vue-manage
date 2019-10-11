@@ -22,6 +22,10 @@ Router.prototype.push = function push(location) {
 // 	return router.data; // arr
 // }
 
+
+
+
+
 /**
  * 1、roles:后台返回的权限结构;
  *
@@ -41,7 +45,7 @@ export const constantRouterMap = [
 	{
     path: '',
     component: Layout,
-		redirect: '/index/index',
+		redirect: '/index',
 		hidden:true
   },
 	{ path: '/login',name: 'login',component:() => import('@/page/login'),hidden: true},
@@ -49,7 +53,7 @@ export const constantRouterMap = [
   // { path: '/401', component: () => import('@/page/errorPage/401'), hidden: true },
 	{
 		path: '/index',
-		name: 'index',
+		name: 'index1',
 		component:Layout,
 		meta:{
 			title:'首页',
@@ -58,7 +62,9 @@ export const constantRouterMap = [
 		noDropdown:true,
 		children:[
 			{
-				path:'index',
+				path:'/',
+        name: 'index',
+
 				meta:{
 					title:'首页',
 					icon:nav2,
@@ -152,19 +158,8 @@ export const constantRouterMap = [
     },
 
 	  ]
-	}
-]
-
-	//注册路由
-export default new Router({
-	mode:'history', // 默认为'hash'模式
-	base: '/permission/', // 添加跟目录,对应服务器部署子目录
-	routes: constantRouterMap
-})
-
-  //异步路由（需要权限的页面）
-export const asyncRouterMap = [
-	{
+	},
+  {
 		path:'/shareMange',
 		name: 'shareMange',
 		component:Layout,
@@ -173,16 +168,7 @@ export const asyncRouterMap = [
 			icon: nav3,
 		},
 		children:[
-			// {
-			// 	path:'shareConfig',
-			// 	name: 'shareConfig',
-			// 	meta:{
-			// 		title:'证照共享接口配置',
-			// 		icon:'iconuser',
-			// 	  routerType:'leftmenu'
-			// 	},
-			// 	 component: () => import('@/page/userList/userList'),
-			// },
+
 			{
 				path:'shareList',
 				name: 'shareList',
@@ -213,18 +199,7 @@ export const asyncRouterMap = [
 				  routerType:'leftmenu'
 				},
 				 component: () => import('@/page/share/shareLog/index'),
-			},
-      {
-				path:'shareLogInfo',
-				name: 'shareLogInfo',
-				meta:{
-					title:'证照接口调用详情',
-					icon:'iconuser',
-				  routerType:'leftmenu'
-				},
-        hidden: true,
-				 component: () => import('@/page/share/shareLog/info'),
-			}
+			}      
 		]
 	},
 
@@ -294,10 +269,46 @@ export const asyncRouterMap = [
       component: () => import('@/page/permission/organ'),
     }]
   },
+  {
+    path: '/operlog',
+		name: 'operlog',
+    component:Layout,
+		meta:{
+			title:'首页',
+			icon: nav2,
+		},
+		noDropdown:true,
+		children:[
+			{
+				path:'/',
+        name: 'operlog',
+
+				meta:{
+					title:'日志管理',
+					icon:nav2,
+					routerType:'leftmenu'
+				},
+				component: () => import('@/page/operlog/index'),
+			}
+    ]
+  },
+
+]
+
+	//注册路由
+export default new Router({
+	mode:'history', // 默认为'hash'模式
+	base: '/permission/', // 添加跟目录,对应服务器部署子目录
+	routes: constantRouterMap
+})
+
+  //异步路由（需要权限的页面）
+export const asyncRouterMap = [
 
 	// { path: '*', redirect: '/404', hidden: true }
 	];
 
+export const allRouter = constantRouterMap.concat(asyncRouterMap);
 	/**
 	 *  路由设置要求：
 	 * 1、该路由有子菜单,可以设置多层嵌套路由children;如果没有子菜单,不需要设置children;通过item.children.length来判断路由的级数;

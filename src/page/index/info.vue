@@ -1,14 +1,14 @@
 <template>
 	<div class="info">
-		<p>电子证照管理 / 身份证列表 / 证照详情</p>
+		<p>电子证照管理 / {{title}}列表 / 证照详情</p>
 		<h2>证照详情</h2>
 		<div class="content">
-			<h1><img src="../../assets/img/info.png" alt="">身份证详情</h1>
+			<h1><img src="../../assets/img/info.png" alt="">{{title}}详情</h1>
 
-			<el-form class="formBox clear" ref="form" :model="form" label-width="80px">
-				<el-col v-for='i in 11' :span="8">
-				  <el-form-item label="搜索条件:">
-				    段誉
+			<el-form class="formBox clear" ref="form" :model="form" >
+				<el-col v-for='i in column' :span="8">
+				  <el-form-item :label="i.comment">
+				    {{i.value}}
 				  </el-form-item>
 				</el-col>
 
@@ -18,99 +18,59 @@
 		<div class="content">
 			<h1><img src="../../assets/img/prev.png" alt="">证照预览</h1>
 
-			<div class="ofdBox">
-				<img src="" alt="">
-				<img src="" alt="">
-			</div>
+			<iframe class="ofdBox" :src='iframeSrc'></iframe>
 		</div>
-
-
-
 	</div>
 </template>
 
 <script>
+import axios from 'axios'
+import qs from 'qs'
+
 
     export default {
     	data(){
     		return {
-					tableData: [{
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-          }, {
-            date: '2016-05-04',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1517 弄'
-          }, {
-            date: '2016-05-01',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1519 弄'
-          }, {
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
-          }, {
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-          }, {
-            date: '2016-05-04',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1517 弄'
-          }, {
-            date: '2016-05-01',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1519 弄'
-          }, {
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
-          }, {
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1518 弄'
-          }, {
-            date: '2016-05-04',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1517 弄'
-          }, {
-            date: '2016-05-01',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1519 弄'
-          }, {
-            date: '2016-05-03',
-            name: '王小虎',
-            address: '上海市普陀区金沙江路 1516 弄'
-          }],
-					currentPage4: 4,
-					form: {
-	          name: '',
-	          region: '',
-	          date1: '',
-	          date2: '',
-	          delivery: false,
-	          type: [],
-	          resource: '',
-	          desc: ''
-	        }
+					column:[],
+					infoData:'',
+					title:sessionStorage.typeName,
+					iframeSrc:'',
+					form:{}
     		}
     	},
     	components: {
 
 			},
 			created(){
+				this.getList();
 			},
 	  	methods: {
-				onSubmit() {
-	        console.log('submit!');
-	      },
-				handleSizeChange(val) {
-	        console.log(`每页 ${val} 条`);
-	      },
-	      handleCurrentChange(val) {
-	        console.log(`当前页: ${val}`);
-	      }
+				getList(){
+					let that = this;
+					axios({
+						 method: 'get',
+						 url: '/ElecCertSD/'+sessionStorage.port+'/vo/'+sessionStorage.tableId,
+					 }).then(function (res) {
+						 that.column=res.data.columnsMap;
+						 that.infoData=res.data.data;
+						 that.getOfd();
+					 })
+				},
+				getOfd(){
+					let that = this;
+					let data = {
+						'modelName':that.infoData.modelName,
+						'ofdName':that.infoData.ofdName,
+						'content':JSON.stringify(that.infoData)
+					}
+					axios({
+						 method: 'post',
+						 url: '/ElecCertSD/ofdpath',
+						 data:qs.stringify(data)
+					 }).then(function (res) {
+						 that.iframeSrc = res.data;
+					 })
+				}
 	  	}
   	}
 </script>
@@ -127,6 +87,9 @@
 			font-size: 16px;
 			color: #FFFFFF;
 			padding: 10px 0;
+		}
+		.formBox {
+			padding: 0 20px;
 		}
 		.content {
 			margin-top: 15px;
@@ -152,8 +115,8 @@
 			.ofdBox {
 				margin-left: 20px;
 				margin-bottom: 10px;
-				width: 220px;
-				height: 280px;
+				width: 80%;
+				height: 500px;
 				padding: 20px;
 				background: rgba(255,255,255,0.10);
 				border: 1px solid rgba(255,255,255,0.50);

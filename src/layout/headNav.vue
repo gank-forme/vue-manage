@@ -14,7 +14,7 @@
                             <template slot="title">
                                 <div class='welcome'>
                                     <span class="name">{{$t('commons.hi')}},</span>
-                                    <span class='name avatarname'> {{ $t(`commons.${name}`)}}</span>
+                                    <span class='name avatarname'> {{data.realName}}</span>
                                 </div>
                                 <img :src="avatar" class='avatar' alt="">
                             </template>
@@ -34,6 +34,8 @@
     import * as mUtils from '@/utils/mUtils'
     import { setToken,getToken } from '@/utils/auth'
     import store from "@/store";
+    import store1 from "@/store/store.js";
+
     import topMenu from "./topMenu";
     import wechatImg from "@/assets/img/wechat.jpg";
     import qqImg from "@/assets/img/qq.png";
@@ -45,6 +47,7 @@
 
     export default {
           name: 'head-nav',
+          props:['data'],
           data(){
             return{
                 logo:logoImg,
@@ -62,7 +65,8 @@
                 github:github,
                 menu:{
                     userBgcolor:'#f0f2f5'
-                }
+                },
+                realName:''
             }
           },
           components:{
@@ -79,6 +83,8 @@
 
           },
           mounted(){
+            //console.log(store1.state.userData);
+            //this.realName = store1.state.userData.realName
           },
           methods:{
               showWechat(){

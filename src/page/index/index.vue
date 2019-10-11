@@ -2,11 +2,10 @@
 	<div class="index">
 		<h1 class="title">电子证照管理</h1>
 		<div class="search clear margin">
-			<input class="left" type="text" name="" placeholder="请输入部门名称" value="">
-			<div class="right">搜索</div>
+			<input class="left" type="text" name="" placeholder="请输入部门名称" v-model='searchVal'>
+			<div class="right" @click='search'>搜索</div>
 		</div>
 		<div class="numBox">
-
 				<el-row :gutter="16">
 					<transition-group name="fade">
 					  <el-col :span="8" v-for ='(i,index) in liBg' :key='index'>
@@ -29,32 +28,39 @@
 
 		<div class="listBox">
 			<el-row :gutter="16">
-				<router-link :to="{ name: 'indexList', params: {} }" v-for ='(i,index) in list'>
-				  <el-col :span="8" >
+
+				  <el-col :span="8"  @click.native='toList(i.orgId)' v-for ='(i,index) in list'>
 						<div class="wrap">
 							<div class="clear clears">
 								<div class="name">
-									<img class="left" :src="i.icon" alt=""> {{i.tit}}
+									<img class="left" :src="i.imgUrl" alt=""> {{i.orgName}}
 								</div>
 
 								<div class="txt clear">
 									<div class="left first">
 										<h3>证照种类</h3>
-										<p>16</p>
+										<p>{{i.certCount}}</p>
 									</div>
 									<div class="left">
 										<h3>证照签发量</h3>
-										<p>16123123</p>
+										<p>{{i.certIssueSum}}</p>
 									</div>
 								</div>
 							</div>
 						</div>
-
 					</el-col>
-				</router-link>
 			</el-row>
 		</div>
 
+		<el-pagination
+		  background
+			@current-change="handleCurrentChange"
+			@prev-click = 'handleCurrentChange'
+			@next-click = 'handleCurrentChange'
+			:page-size='itemNum'
+		  layout="prev, pager, next"
+		  :total="total">
+		</el-pagination>
 	</div>
 </template>
 
@@ -65,99 +71,93 @@
 
 		import icon from '@/assets/img/icon.png'
 
+		import axios from 'axios'
+
 
     export default {
     	data(){
     		return {
+					searchVal:'',
 					liBg:[
 						{
 							img:li1,
 							tit:'证照总签发量',
-							num:'123123123'
+							num:0
 						},
 						{
 							img:li2,
 							tit:'证照种类',
-							num:'123'
+							num:0
 						},
 						{
 							img:li3,
 							tit:'在用证照数量',
-							num:'2323'
+							num:0
 						},
 					],
-					list:[
-						{
-							icon:icon,
-							tit:'省公安厅',
-							num:'123123123'
-						},
-						{
-							icon:icon,
-							tit:'省公安厅',
-							num:'123'
-						},
-						{
-							icon:icon,
-							tit:'省公安厅',
-							num:'2323'
-						},
-						{
-							icon:icon,
-							tit:'省公安厅',
-							num:'123123123'
-						},
-						{
-							icon:icon,
-							tit:'省公安厅',
-							num:'123'
-						},
-						{
-							icon:icon,
-							tit:'省公安厅',
-							num:'2323'
-						},
-						{
-							icon:icon,
-							tit:'省公安厅',
-							num:'123123123'
-						},
-						{
-							icon:icon,
-							tit:'省公安厅',
-							num:'123'
-						},
-						{
-							icon:icon,
-							tit:'省公安厅',
-							num:'2323'
-						},
-						{
-							icon:icon,
-							tit:'省公安厅',
-							num:'123123123'
-						},
-						{
-							icon:icon,
-							tit:'省公安厅',
-							num:'123'
-						},
-						{
-							icon:icon,
-							tit:'省公安厅',
-							num:'2323'
-						},
-					]
+					list:[],
+					itemNum:9,
+					pgIndex:1,
+					total:100,
+					// currentPage4: 4
     		}
     	},
     	components: {
 
 			},
 			created(){
+				this.getIndexList();
 			},
 	    mounted(){
 			},
 	  	methods: {
+				search(){
+					let that = this;
+					that.pgIndex=1;
+					that.itemNum=9;
+		      axios({
+		         method: 'get',
+		         url: '/ElecCertSD/orgCertificates?keyword='+that.searchVal+'&pgIndex='+that.pgIndex+'&pgCount='+that.itemNum,
+		       }).then(function (res) {
+						 that.list = res.data.elements;
+						 that.total = res.data.totalElements;
+		       });
+				},
+				getIndexList(){
+					let that = this;
+		      axios({
+		         method: 'get',
+		         url: '/ElecCertSD/orgCertificates?pgIndex='+that.pgIndex+'&pgCount='+that.itemNum,
+		       }).then(function (res) {
+						 that.list = res.data.elements;
+						 that.total = res.data.totalElements;
+		       });
+					 this.getTotal();
+				},
+				getTotal(){
+					let that = this;
+		      axios({
+		         method: 'get',
+		         url: '/ElecCertSD/certStatistics',
+		       }).then(function (res) {
+						 that.liBg[0].num=res.data.certIssueSum;
+						 that.liBg[1].num=res.data.certCount;
+						 that.liBg[2].num=res.data.ingCertIssueSum;
+		       });
+				},
+				toList(e){
+					sessionStorage.orgId=e;
+					this.$router.push({
+						name:'indexList'
+					})
+				},
+				handleCurrentChange(val){
+					this.pgIndex = val;
+					this.getIndexList();
+				},
+				// @current-change="handleCurrentChange"
+				// @prev-click = 'prevChange'
+				// @next-click = 'nextChange'
 				selectStyle (item) {
 	        var _this=this;
 	        this.$nextTick(function () {

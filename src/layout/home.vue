@@ -1,8 +1,8 @@
 <template>
     <div class="home rflex">
-        <left-menu></left-menu>
+        <left-menu :data='data'></left-menu>
         <div class="menu_right wflex el-scrollbar" ref="menu_right" :style="{left:sidebar.width+'px'}">
-            <head-nav></head-nav>
+            <head-nav :data='data'></head-nav>
             <div class="menu_content" ref="menu_content">
 
                 <router-view></router-view><!--页面渲染入口-->
@@ -20,10 +20,14 @@
 	import FooterNav from './footerNav.vue';
 	import backTop from 'cps/backTop';
 
+  import axios from 'axios'
+  import store from '@/store/store.js'
+
     export default {
         name: 'home',
         data(){
             return {
+              data:{}
             }
         },
         computed:{
@@ -36,6 +40,14 @@
             backTop
         },
         created() {
+          let that = this;
+          axios({
+             method: 'get',
+             url: '/ElecCertSD/userinfo',
+           }).then(function (res) {
+             that.data = res.data;
+           })
+
         },
         mounted (){
         },

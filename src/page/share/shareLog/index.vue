@@ -5,11 +5,6 @@
 			<h1>证照接口调用日志</h1>
 			<el-form class="formBox clear" ref="form" :model="form" :inline='true'>
         <el-row >
-          <el-col :span="6">
-             <el-form-item label="调用证照">
-               <el-input v-model="form.desc"></el-input>
-             </el-form-item>
-          </el-col>
 					<el-col :span="6">
             <el-form-item label="调用部门">
               <el-input v-model="form.name"></el-input>
@@ -30,7 +25,7 @@
              </el-form-item>
            </el-col>
            <el-col :span="2">
-              <el-button class="searchBtn" type="primary">查询</el-button>
+              <el-button class="searchBtn" type="primary" @click='search'>查询</el-button>
            </el-col>
          </el-row>
 
@@ -44,7 +39,6 @@
     :data="tableData"
     tooltip-effect="dark"
     style="width: 100%"
-		@row-click='rowRouter'
     >
       <el-table-column
         type="index"
@@ -53,35 +47,46 @@
         >
       </el-table-column>
       <el-table-column
-        prop="name"
-        label="调用证照"
+        prop="userName"
+        label="调用部门"
         >
       </el-table-column>
       <el-table-column
-        prop="address"
-        label="调用部门">
+        prop="userIp"
+        label="操作IP">
       </el-table-column>
 			<el-table-column
-        prop="name"
-        label="调用次数">
+        prop="module"
+        label="模块名称">
       </el-table-column>
-
+			<el-table-column
+        label="是否成功">
+				<template slot-scope="scope">
+          <span class="lastItem" :class='scope.row.flag==1?"":"stop"'>{{scope.row.flag==1?'成功':'失败'}}</span>
+        </template>
+      </el-table-column>
+			<el-table-column
+        prop="gmtCreate"
+        label="操作时间">
+      </el-table-column>
     </el-table>
 
 		<el-pagination
-      @size-change="handleSizeChange"
+      @size-change="handleCurrentChange"
       @current-change="handleCurrentChange"
-      :current-page="currentPage4"
-      :page-sizes="[100, 200, 300, 400]"
-      :page-size="100"
+			@prev-click = 'handleCurrentChange'
+			@next-click = 'handleCurrentChange'
+      :page-sizes="[10]"
+      :page-size="itemNum"
 			background
       layout="total, sizes, prev, pager, next, jumper"
-      :total="400">
+      :total="total">
     </el-pagination>
 	</div>
 </template>
 
 <script>
+import axios from 'axios'
 
     export default {
       name:'infoShow',
@@ -90,59 +95,17 @@
   		},
     	data(){
     		return {
-					tableData: [{
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '2.0'
-          },{
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '2.0'
-          },{
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '2.0'
-          },{
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '2.0'
-          },{
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '2.0'
-          },{
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '2.0'
-          },{
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '2.0'
-          },{
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '2.0'
-          },{
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '2.0'
-          },{
-            date: '2016-05-02',
-            name: '王小虎',
-            address: '2.0'
-          },],
-					currentPage4: 4,
+					tableData: [],
+					itemNum:10,
+					pgIndex:0,
+					total:0,
+					keyword:'',
+					status:'',
+					sortColumn:'',
+					beginTime:'',
+					endTime:'',
           multipleSelection:[],
-					form: {
-	          name: '',
-	          region: '',
-	          date1: '',
-	          date2: '',
-	          delivery: false,
-	          type: [],
-	          resource: '',
-	          desc: ''
-	        },
+					form: {},
 					pickerOptions: {
 	          shortcuts: [{
 	            text: '最近一周',
@@ -174,27 +137,53 @@
     		}
     	},
 			created(){
+				this.getList();
 			},
 	  	methods: {
-				onSubmit() {
-	        console.log('submit!');
-	      },
-				handleSizeChange(val) {
-	        console.log(`每页 ${val} 条`);
-	      },
-	      handleCurrentChange(val) {
-	        console.log(`当前页: ${val}`);
-	      },
-        handleSelectionChange(val) {
-          this.multipleSelection = val;
-        },
+				search(){
+					let that = this;
+					that.pgIndex=1;
+					that.beginTime  = that.value2?new Date(that.value2[0]).format("yyyy-MM-dd hh:mm:ss"):'';
+					that.endTime  = that.value2?new Date(that.value2[1]).format("yyyy-MM-dd hh:mm:ss"):'';
+					axios({
+						 method: 'get',
+						 url: '/ElecCertSD/operlogs',
+						 params:{
+							 pgIndex:that.pgIndex,
+							 pgCount:that.itemNum,
+							 sortColumn: 'gmt_create desc',
+							 typeIs:1,
+							 keyword:that.form.name,
+							 beginTime:that.beginTime,
+							 endTime:that.endTime
+						 }
+					 }).then(function (res) {
+						 that.tableData = res.data.elements
+						 that.total = res.data.totalElements;
+					 });
+				},
+				handleCurrentChange(val){
+					this.pgIndex = val;
+					this.getList();
+				},
         delFun(scope){
           console.log(scope);
         },
 				rowRouter(row){
+					sessionStorage.tableId = row.id;
 					this.$router.push({
 						'name':'shareLogInfo'
 					})
+				},
+				getList(){
+					let that = this;
+		      axios({
+		         method: 'get',
+		         url: '/ElecCertSD/operlogs?pgIndex='+that.pgIndex+'&pgCount='+that.itemNum+'&keyword='+that.keyword+'&typeIs=1&sortColumn=gmt_create+desc&beginTime='+that.beginTime+'&endTime='+that.endTime,
+		       }).then(function (res) {
+						 that.tableData = res.data.elements;
+						 that.total = res.data.totalElements;
+		       })
 				}
 	  	}
   	}

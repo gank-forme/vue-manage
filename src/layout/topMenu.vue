@@ -43,29 +43,16 @@
             ...mapGetters(['topRouters'])
         },
         created(){
-           this.setLeftInnerMenu();  // 针对刷新页面时，也需要加载顶部菜单
+           //this.setLeftInnerMenu();  // 针对刷新页面时，也需要加载顶部菜单
         },
         mounted(){
         },
         methods:{
-            setLeftInnerMenu(){
-              console.log(this.$route);
-                const titleList = this.$route.matched[1].meta.titleList;
-                const currentTitle = titleList && this.$route.matched[2].meta.title;
-                if( titleList && this.$route.matched[1].meta.routerType === 'leftmenu'){ // 点击的为 左侧的2级菜单
-                    this.$store.dispatch('ClickLeftInnerMenu',{'titleList':titleList});
-                    this.$store.dispatch('ClickTopMenu',{'title':currentTitle});
-                }else{ // 点击左侧1级菜单
-                    this.$store.dispatch('ClickLeftInnerMenu',{'titleList':[]});
-                    this.$store.dispatch('ClickTopMenu',{'title':''});
-                }
-            },
-            getPath(){
-               this.setLeftInnerMenu();
-            },
+
+
         },
         watch:{
-            "$route":"getPath"
+            
         }
     }
 
